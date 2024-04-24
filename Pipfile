@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 giphy-client = "*"
+lxml = "*"
+requests = "*"
+moviepy = "*"
 
 [dev-packages]
 
