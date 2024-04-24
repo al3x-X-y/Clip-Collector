@@ -13,7 +13,7 @@ TENOR_API_KEY = "your_tenor_api_key"  # Add your Tenor API key here
 TENOR_LIMIT = 10  # Set the limit for Tenor results
 
 
-class TenorDownloader:
+class TenorScrapper:
     def __init__(self, api_key: str, limit: int):
         self.api_key = api_key
         self.limit = limit
@@ -26,7 +26,6 @@ class TenorDownloader:
             "-o", "--output", type=str, default=os.getcwd(), help="Output directory"
         )
         return parser.parse_args(args)
-
 
     def get_image_url(self, keyword: str) -> list[str]:
         url = f"https://api.tenor.com/v1/search?q={keyword}&key={self.api_key}&limit={self.limit}"

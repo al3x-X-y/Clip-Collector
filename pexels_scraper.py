@@ -4,6 +4,7 @@ from requests import get
 import requests
 from moviepy.editor import VideoFileClip, AudioFileClip, CompositeAudioClip
 import random
+from USER_AGENTS import USER_AGENTS
 
 
 # Specify the API key for Pexels
@@ -17,22 +18,26 @@ search_query = "cat"
 pexels_base_url = f"https://api.pexels.com/videos/search?query={search_query}&per_page="
 
 # Specify the base URL for Pexels photos
-pexels_photos_base_url = f"https://api.pexels.com/v1/search?query={search_query}&per_page="
-
-# Define user agent to mimic a web browser
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+pexels_photos_base_url = (
+    f"https://api.pexels.com/v1/search?query={search_query}&per_page="
+)
 
 
 class PexelsDownloader:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.headers = {"Authorization": api_key, "User-Agent": USER_AGENT}
+        self.headers = {
+            "Authorization": api_key,
+            "User-Agent": USER_AGENTS[random.randint(0, len(USER_AGENTS) - 1)],
+        }
 
     def get_video_links(self, limit):
-        response = requests.get(pexels_base_url + str(limit), headers=self.headers, verify=False)
+        response = requests.get(
+            pexels_base_url + str(limit), headers=self.headers, verify=False
+        )
         if response.status_code == 200:
             data = response.json()
-            return [video['video_files'][0]['link'] for video in data['videos']]
+            return [video["video_files"][0]["link"] for video in data["videos"]]
         else:
             print("Error: Failed to fetch video links")
             return []
@@ -47,7 +52,7 @@ class PexelsDownloader:
             r = requests.get(link, stream=True, verify=False)
 
             # Download started
-            with open(file_name, 'wb') as f:
+            with open(file_name, "wb") as f:
                 for chunk in r.iter_content(chunk_size=1024 * 1024):
                     if chunk:
                         f.write(chunk)
@@ -58,17 +63,21 @@ class PexelsDownloader:
             song_choice = random.choice(range(1, 6))  # Assuming 5 audio files available
             clip = VideoFileClip(file_name)
             clip_duration = clip.duration
-            audioclip = AudioFileClip(f"songs/audio{song_choice}.mp3").set_duration(clip_duration)
+            audioclip = AudioFileClip(f"songs/audio{song_choice}.mp3").set_duration(
+                clip_duration
+            )
             new_audioclip = CompositeAudioClip([audioclip])
             final_clip = clip.set_audio(new_audioclip)
             final_clip.write_videofile(f"videos/edited_video_{i}.mp4", fps=60)
             print(f"{file_name} has been edited!\n")
 
     def get_photo_urls(self, limit):
-        response = requests.get(pexels_photos_base_url + str(limit), headers=self.headers, verify=False)
+        response = requests.get(
+            pexels_photos_base_url + str(limit), headers=self.headers, verify=False
+        )
         if response.status_code == 200:
             data = response.json()
-            return [photo['src']['original'] for photo in data['photos']]
+            return [photo["src"]["original"] for photo in data["photos"]]
         else:
             print("Error: Failed to fetch photo URLs")
             return []
@@ -83,7 +92,7 @@ class PexelsDownloader:
             r = requests.get(url, stream=True, verify=False)
 
             # Download started
-            with open(file_name, 'wb') as f:
+            with open(file_name, "wb") as f:
                 for chunk in r.iter_content(chunk_size=1024 * 1024):
                     if chunk:
                         f.write(chunk)
@@ -107,9 +116,3 @@ if __name__ == "__main__":
 
     # Downloading all photos
     pexels_downloader.download_photos(photo_urls, photo_limit)
-
-
-
-
-
-
