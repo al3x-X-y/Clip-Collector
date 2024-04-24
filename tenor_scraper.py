@@ -3,17 +3,14 @@ import os
 import sys
 import requests
 from uuid import uuid4
+from API_KEYS import TENOR_API_KEY
 
 # Define constants
 RESOLUTIONS = [16, 24, 32, 64, 128, 256, 512]
-TENOR_API_KEY = "your_tenor_api_key"  # Add your Tenor API key here
-TENOR_LIMIT = 10  # Set the limit for Tenor results
-
 
 class TenorScraper:
-    def __init__(self, api_key: str, limit: int):
-        self.api_key = api_key
-        self.limit = limit
+    def __init__(self, api_key: str):
+        self.api_key = TENOR_API_KEY
         self.session = requests.Session()
 
     def parse_arguments(self, args: list[str]) -> argparse.Namespace:
@@ -25,7 +22,7 @@ class TenorScraper:
         return parser.parse_args(args)
 
     def get_image_url(self, keyword: str) -> list[str]:
-        url = f"https://api.tenor.com/v1/search?q={keyword}&key={self.api_key}&limit={self.limit}"
+        url = f"https://api.tenor.com/v1/search?q={keyword}&key={self.api_key}"
         try:
             response = self.session.get(url)
             results = response.json()
@@ -64,5 +61,5 @@ class TenorScraper:
 
 
 if __name__ == "__main__":
-    downloader = TenorScraper(TENOR_API_KEY, TENOR_LIMIT)
+    downloader = TenorScraper(TENOR_API_KEY)
     downloader.main
