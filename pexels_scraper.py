@@ -5,10 +5,7 @@ import requests
 from moviepy.editor import VideoFileClip, AudioFileClip, CompositeAudioClip
 import random
 from USER_AGENTS import USER_AGENTS
-
-
-# Specify the API key for Pexels
-PEXELS_API_KEY = "api"
+from API_KEYS import PEXELS_API_KEY
 
 
 # Specify the search query
@@ -23,9 +20,9 @@ pexels_photos_base_url = (
 )
 
 
-class PexelsDownloader:
+class PexelsScraper:
     def __init__(self, api_key):
-        self.api_key = api_key
+        self.api_key = PEXELS_API_KEY
         self.headers = {
             "Authorization": api_key,
             "User-Agent": USER_AGENTS[random.randint(0, len(USER_AGENTS) - 1)],
@@ -101,7 +98,7 @@ class PexelsDownloader:
 
 
 if __name__ == "__main__":
-    pexels_downloader = PexelsDownloader(PEXELS_API_KEY)
+    pexels_downloader = PexelsScraper(PEXELS_API_KEY)
 
     # Getting all video links from Pexels API
     video_limit = 5  # Limit for videos to download
