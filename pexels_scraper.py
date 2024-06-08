@@ -1,10 +1,11 @@
 import requests
 import asyncio
+from API_KEYS import PEXELS_API_KEY
 
 
 class PexelsScraper:
     def __init__(self):
-        self.API_KEY = "Your_Pexels_API_Key"
+        self.API_KEY = PEXELS_API_KEY
         self.headers = {"Authorization": self.API_KEY}
 
     async def get_media_links(self, query, media_type, limit):
