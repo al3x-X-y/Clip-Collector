@@ -2,6 +2,7 @@ import os
 import requests
 import giphy_client
 from giphy_client.rest import ApiException
+import _asyncio
 from API_KEYS import GIPHY_API_KEY
 
 
@@ -11,27 +12,28 @@ class GiphyScraper:
         self.api_key = GIPHY_API_KEY  # Use the imported Giphy API key
         self.lang = lang
 
-    def get_gifs_links(self, query):
+    async def get_gifs_links(self, query, limit=10):
         try:
             api_response = self.api_instance.gifs_search_get(
-                self.api_key, query, lang=self.lang
-            )
+            self.api_key, query, lang=self.lang, limit=limit
+        )
             return [gif.images.original.url for gif in api_response.data]
         except ApiException as e:
             print("Exception when calling DefaultApi->gifs_search_get: %s\n" % e)
             return []
 
-    def get_sticker_links(self, query):
+
+    async def get_sticker_links(self, query, limit=10):
         try:
             api_response = self.api_instance.stickers_search_get(
-                self.api_key, query, lang=self.lang
-            )
+            self.api_key, query, lang=self.lang, limit=limit
+        )
             return [sticker.images.original.url for sticker in api_response.data]
         except ApiException as e:
             print("Exception when calling DefaultApi->stickers_search_get: %s\n" % e)
             return []
 
-    def download(self, url, filename):
+    async def download(self, url, filename):
         response = requests.get(url)
         if response.status_code == 200:
             with open(filename, "wb") as f:

@@ -3,6 +3,7 @@ import random
 import requests
 import urllib.parse
 from lxml import html
+import asyncio
 import USER_AGENTS
 
 RESOLUTIONS = [16, 24, 32, 64, 128, 256, 512]
@@ -15,15 +16,16 @@ class FlaticonScraper:
     def __init__(self, query):
         self.query = urllib.parse.quote(query)  # URL-encode the query string
 
-    def download(self, image_url, filename):
+    async def download(self, image_url, filename):
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         response = requests.get(image_url, allow_redirects=True)
         with open(filename, "wb") as f:
             f.write(response.content)
 
-    def get_image_links(self):
+    async def get_image_links(self):
+        imgs = []
         page_url = f"{self.BASE_URL}?word={self.query}"  # Construct the URL
-        image_type = self.define_type(page_url)
+        image_type = await self.define_type(page_url)
         result = []
         page = requests.get(
             page_url, headers={"User-Agent": random.choice(USER_AGENTS.USER_AGENTS)}
@@ -40,11 +42,12 @@ class FlaticonScraper:
             imgs = html.fromstring(page.text).xpath(
                 ".//li[contains(@class, 'icon--item')][@data-png]/@data-png"
             )
+        print (imgs)
         for url in imgs:
             result.append(url)
-        return result
+        return imgs
 
-    def define_type(self, page_url):
+    async def define_type(self, page_url):
         if page_url.startswith("https://www.flaticon.com/search"):
             return 3
         elif page_url.startswith("https://www.flaticon.com/packs"):
@@ -55,9 +58,10 @@ class FlaticonScraper:
             return 0
 
 
-# Usage
+
+
 if __name__ == "__main__":
     scraper = FlaticonScraper("cat")
-    image_links = scraper.get_image_links()
+    image_links = asyncio.run(scraper.get_image_links())
     for i, image_link in enumerate(image_links):
         scraper.download(image_link, f"flaticon/icon_{i}.png")
