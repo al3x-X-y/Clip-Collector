@@ -77,6 +77,11 @@ class GifDisplay:
                 st.image(Image.open(BytesIO(icon_bytes)), use_column_width=True)
 
 def main():
+    # Tittle
+    st.markdown(
+        "<h1 style='font-size: 50px; text-align: center;'>Clip Collector</h1>",
+        unsafe_allow_html=True,
+    )
     # Search box
     search_term = st.text_input("Enter search term:")
     gifs_per_row = st.slider(
